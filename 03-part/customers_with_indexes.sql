@@ -23,45 +23,45 @@ CREATE TYPE "trade_status" AS ENUM (
 
 CREATE TABLE "country" (
   "id_country" SERIAL PRIMARY KEY,
-  "name" char
+  "name" varchar UNIQUE NOT NULL
 );
 
 CREATE TABLE "region" (
   "id_region" SERIAL PRIMARY KEY,
-  "id_country" int,
-  "name" varchar
+  "id_country" int NOT NULL,
+  "name" varchar UNIQUE NOT NULL
 );
 
 CREATE TABLE "city" (
   "id_city" SERIAL PRIMARY KEY,
-  "id_region" int,
-  "name" varchar
+  "id_region" int NOT NULL,
+  "name" varchar NOT NULL
 );
 
 CREATE TABLE "street" (
   "id_street" SERIAL PRIMARY KEY,
-  "id_city" int,
-  "name" varchar
+  "id_city" int NOT NULL,
+  "name" varchar NOT NULL
 );
 
 CREATE TABLE "address" (
   "id_address" SERIAL PRIMARY KEY,
-  "id_street" int,
+  "id_street" int NOT NULL,
   "building_num" varchar,
   "apartment_num" int,
-  "postal_code" varchar
+  "postal_code" varchar NOT NULL
 );
 
 CREATE TABLE "customer" (
   "id_customer" SERIAL PRIMARY KEY,
   "created_at" date,
   "updated_at" date,
-  "first_name" varchar,
-  "last_name" varchar,
-  "birth_date" date,
+  "first_name" varchar NOT NULL,
+  "last_name" varchar NOT NULL,
+  "birth_date" date CHECK (birth_date > '1900-01-01'),
   "phone_number" varchar,
   "email" varchar,
-  "id_title" int,
+  "id_title" int NOT NULL,
   "gender" customer_gender,
   "marital_status" customer_marital_status
 );
@@ -73,17 +73,17 @@ CREATE TABLE "title" (
 
 CREATE TABLE "product" (
   "id_product" SERIAL PRIMARY KEY,
-  "name" varchar,
+  "name" varchar NOT NULL,
   "created_at" date,
   "updated_at" date,
   "deleted_at" date,
-  "id_category" int,
-  "id_manufacturer" int
+  "id_category" int NOT NULL,
+  "id_manufacturer" int NOT NULL
 );
 
 CREATE TABLE "product_param" (
   "id_product_param" SERIAL PRIMARY KEY,
-  "name" varchar,
+  "name" varchar NOT NULL,
   "created_at" date,
   "updated_at" date,
   "deleted_at" date,
@@ -91,28 +91,28 @@ CREATE TABLE "product_param" (
   "float_value" float,
   "text_value" text,
   "varchar_value" varchar,
-  "id_product" int
+  "id_product" int NOT NULL
 );
 
 CREATE TABLE "category" (
   "id_category" SERIAL PRIMARY KEY,
-  "name" int,
+  "name" int NOT NULL,
   "parent_id" int
 );
 
 CREATE TABLE "manufacturer" (
   "id_manufacturer" SERIAL PRIMARY KEY,
-  "name" varchar,
+  "name" varchar NOT NULL,
   "phone" varchar,
-  "id_address" int,
+  "id_address" int NOT NULL,
   "comment" varchar
 );
 
 CREATE TABLE "dealer" (
   "id_dealer" SERIAL PRIMARY KEY,
-  "name" varchar,
+  "name" varchar NOT NULL,
   "phone" varchar,
-  "id_address" int,
+  "id_address" int NOT NULL,
   "comment" varchar
 );
 
@@ -126,45 +126,45 @@ CREATE TABLE "dealer_manufacturer" (
 CREATE TABLE "order" (
   "id_order" SERIAL PRIMARY KEY,
   "created_at" date,
-  "id_language" int,
-  "id_customer" int,
-  "id_address" int,
+  "id_language" int NOT NULL,
+  "id_customer" int NOT NULL,
+  "id_address" int NOT NULL,
   "type" payment_type
 );
 
 CREATE TABLE "language" (
   "id_language" SERIAL PRIMARY KEY,
-  "name" char
+  "name" char NOT NULL
 );
 
 CREATE TABLE "product_buy" (
   "id_product_buy" SERIAL PRIMARY KEY,
   "created_at" date,
-  "price" int,
-  "id_currency" int,
-  "id_dealer" int,
-  "id_product" int,
-  "quantity" int,
+  "price" int NOT NULL CHECK(price > 0),
+  "id_currency" int NOT NULL,
+  "id_dealer" int NOT NULL,
+  "id_product" int NOT NULL,
+  "quantity" int NOT NULL,
   "status" trade_status
 );
 
 CREATE TABLE "product_sell" (
   "id_product_sale" SERIAL PRIMARY KEY,
   "created_at" date,
-  "price" int,
-  "id_currency" int,
-  "id_order" int,
-  "id_product" int,
-  "quantity" int,
+  "price" int NOT NULL CHECK(price > 0),
+  "id_currency" int NOT NULL,
+  "id_order" int NOT NULL,
+  "id_product" int NOT NULL,
+  "quantity" int NOT NULL,
   "status" trade_status
 );
 
 CREATE TABLE "currency" (
   "id_currency" SERIAL PRIMARY KEY,
   "created_at" date,
-  "name" varchar,
-  "code" varchar,
-  "rate" decimal
+  "name" varchar NOT NULL,
+  "code" varchar NOT NULL,
+  "rate" decimal NOT NULL
 );
 
 ALTER TABLE "region" ADD FOREIGN KEY ("id_country") REFERENCES "country" ("id_country");
@@ -213,7 +213,7 @@ CREATE INDEX ON "customer" ("first_name", "last_name");
 
 CREATE INDEX ON "customer" ("phone_number");
 
-CREATE INDEX ON "customer" ("email");
+CREATE UNIQUE INDEX ON "customer" ("email");
 
 CREATE INDEX ON "product" ("name");
 
