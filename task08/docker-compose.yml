@@ -1,0 +1,28 @@
+version: '3.5'
+
+services:
+  otusdb:
+    image: postgres:12
+    environment:
+      POSTGRES_USER:     "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB:       "postgres"
+    networks:
+      - otusdb-nw
+    volumes:
+      - data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d/
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+
+networks:
+  otusdb-nw:
+    name: otusdb-network
+
+volumes:
+  data:
